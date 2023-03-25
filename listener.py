@@ -22,7 +22,7 @@ class Listener:
         json_data = ""
         while True:
             try:
-                json_data = json_data + str(self.connection.recv(1024))
+                json_data = json_data + self.connection.recv(1024)
                 return json.loads(json_data)
             except ValueError:
                 continue
