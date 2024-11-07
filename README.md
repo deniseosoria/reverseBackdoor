@@ -41,12 +41,12 @@ Once the listener is connected to a target machine, you can use various commands
 - `upload <file_path>`: Upload a file to the target machine.
 - `cd <directory>`: Change the working directory on the target machine.
 - `exit`: Close the connection.
-- 
+
 Example:
-    ```bash
-    Copy code
-    >> download /path/to/target/file.txt
-    [+] Download successful.
+     ```bash
+     Copy code
+     >> download /path/to/target/file.txt
+     [+] Download successful.
 ## Files
 
 ### listener.py
