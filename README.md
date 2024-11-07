@@ -43,13 +43,10 @@ Once the listener is connected to a target machine, you can use various commands
 - `exit`: Close the connection.
 - 
 Example:
-
      ```bash
-      Copy code
-      >> download /path/to/target/file.txt
-      [+] Download successful.
-     
-
+    Copy code
+    >> download /path/to/target/file.txt
+    [+] Download successful.
 ## Files
 
 ### listener.py
